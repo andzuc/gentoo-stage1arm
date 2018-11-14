@@ -1,10 +1,5 @@
-# name the portage image
-FROM gentoo/portage:latest as portage
+FROM andzuc/gentoo-stage3amd64
 
-# image is based on stage3-amd64
-FROM gentoo/stage3-amd64:latest
-
-# copy the entire portage volume in
-COPY --from=portage /usr/portage /usr/portage
-
-RUN emerge --info
+RUN USE="static" \
+    QEMU_USER_TARGETS="arm" \
+    emerge -pv app-emulation/qemu
