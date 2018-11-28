@@ -12,7 +12,7 @@ RUN ARCH=arm PORTAGE_CONFIGROOT="/usr/${TARGET}/" eselect profile set ${PROFILE}
 RUN mkdir "/usr/${TARGET}/etc/portage/sets"
 RUN "${TARGET}-emerge" -pe --columns --color n @system --exclude "sys-devel/gcc" \
     |sed -n 's/^[^]]*\] \+\([^ ]*\).*/=\1/p' \
-    |sort >"/usr/${TARGET}/etc/portage/sets/sysexdev"
+    |sort >"/usr/${TARGET}/etc/portage/sets/sysnodev"
 
 # build @sysnodev
 RUN time "${TARGET}-emerge" -vuDN --keep-going @sysnodev
