@@ -21,8 +21,9 @@ ENV DOCKER_PROFILE=hardened/linux/arm/armv6j
 RUN ARCH=arm PORTAGE_CONFIGROOT="/usr/${DOCKER_TARGET}/" eselect profile set "${DOCKER_PROFILE}"
 
 # catalyst seed tarball
-RUN time "${DOCKER_TARGET}-emerge" -v --color n \
+RUN USE="-cxx -nls" time "${DOCKER_TARGET}-emerge" -v --color n \
      sys-apps/baselayout \
+     sys-apps/busybox \
      sys-devel/binutils \
      sys-kernel/linux-headers \
      sys-devel/make \
