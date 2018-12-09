@@ -1,9 +1,9 @@
 FROM andzuc/gentoo-armbuilder-s4
 
 # system config
-ENV ACCEPTED_KEYWORDS="arm"
+ENV DOCKER_ACCEPT_KEYWORDS="arm"
 RUN sed -i \
-    's/ACCEPTED_KEYWORDS=".*"/ACCEPTED_KEYWORDS="'"${DOCKER_ACCEPTED_KEYWORDS}"'"/' \
+    's/ACCEPT_KEYWORDS=".*"/ACCEPT_KEYWORDS="'"${DOCKER_ACCEPT_KEYWORDS}"'"/' \
     "/usr/${DOCKER_TARGET}/etc/portage/make.conf"
 
 ENV DOCKER_FEATURES="-collision-protect -sandbox -usersandbox noman noinfo nodoc"
@@ -22,11 +22,11 @@ RUN ARCH=arm PORTAGE_CONFIGROOT="/usr/${DOCKER_TARGET}/" eselect profile set "${
 
 # catalyst seed tarball
 RUN time "${DOCKER_TARGET}-emerge" -v --color n \
-    sys-apps/baselayout \
-    sys-devel/binutils \
-    sys-kernel/linux-headers \
-    sys-devel/make \
-    sys-devel/gcc
+     sys-apps/baselayout \
+     sys-devel/binutils \
+     sys-kernel/linux-headers \
+     sys-devel/make \
+     sys-devel/gcc
 
 # setup QEMU
 #RUN cp /usr/bin/qemu-arm "/usr/${DOCKER_TARGET}/usr/bin/qemu-arm"
