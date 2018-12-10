@@ -20,14 +20,16 @@ RUN cat "/usr/${DOCKER_TARGET}/etc/portage/make.conf"
 ENV DOCKER_PROFILE=hardened/linux/arm/armv6j
 RUN ARCH=arm PORTAGE_CONFIGROOT="/usr/${DOCKER_TARGET}/" eselect profile set "${DOCKER_PROFILE}"
 
-# catalyst seed tarball
-RUN USE="-cxx -nls" time "${DOCKER_TARGET}-emerge" -v --color n \
-     sys-apps/baselayout \
-     sys-apps/busybox \
-     sys-devel/binutils \
-     sys-kernel/linux-headers \
-     sys-devel/make \
-     sys-devel/gcc
+# stage0: binutils
+RUN time "${DOCKER_TARGET}-emerge" -v --color n \
+    sys-devel/binutils
+# stage1: gcc (C only)
+RUN time "${DOCKER_TARGET}-emerge" -v --color n \
+    sys-kernel/linux-headers
+RUN time "${DOCKER_TARGET}-emerge" -v --color n \
+    sys-devel/glibc
+RUN time USE="-cxx" "${DOCKER_TARGET}-emerge" -v --color n \
+    sys-devel/gcc
 
 # setup QEMU
 #RUN cp /usr/bin/qemu-arm "/usr/${DOCKER_TARGET}/usr/bin/qemu-arm"
