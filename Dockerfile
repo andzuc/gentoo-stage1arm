@@ -26,7 +26,7 @@ RUN time "${DOCKER_TARGET}-emerge" -v --color n \
 # stage1: gcc (C only)
 RUN time USE="headers-only" "${DOCKER_TARGET}-emerge" -v --color n \
     sys-kernel/linux-headers
-RUN time USE="headers-only" "${DOCKER_TARGET}-emerge" -v --color n \
+RUN time USE="headers-only" "${DOCKER_TARGET}-emerge" -v --color n --nodeps \
     sys-devel/glibc
 RUN time USE="-cxx" "${DOCKER_TARGET}-emerge" -v --color n \
     sys-devel/gcc
