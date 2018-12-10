@@ -24,9 +24,9 @@ RUN ARCH=arm PORTAGE_CONFIGROOT="/usr/${DOCKER_TARGET}/" eselect profile set "${
 RUN time "${DOCKER_TARGET}-emerge" -v --color n \
     sys-devel/binutils
 # stage1: gcc (C only)
-RUN time "${DOCKER_TARGET}-emerge" -v --color n \
+RUN time USE="headers-only" "${DOCKER_TARGET}-emerge" -v --color n \
     sys-kernel/linux-headers
-RUN time "${DOCKER_TARGET}-emerge" -v --color n \
+RUN time USE="headers-only" "${DOCKER_TARGET}-emerge" -v --color n \
     sys-devel/glibc
 RUN time USE="-cxx" "${DOCKER_TARGET}-emerge" -v --color n \
     sys-devel/gcc
