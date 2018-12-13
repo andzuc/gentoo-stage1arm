@@ -28,7 +28,8 @@ RUN time USE="headers-only" "${DOCKER_TARGET}-emerge" -v --color n \
     sys-kernel/linux-headers
 RUN time USE="headers-only" "${DOCKER_TARGET}-emerge" -v --color n --nodeps \
     sys-libs/glibc
-RUN time USE="-cxx" "${DOCKER_TARGET}-emerge" -v --color n \
+RUN time USE="nls nptl pch pie ssp -cilk -cxx -debug -doc -fortran -go -graphite -hardened -jit -libssp -mpx -multilib -objc -objc++ -objc-gc -openmp -pgo -regression-test -sanitize -vanilla -vtv" \
+    "${DOCKER_TARGET}-emerge" -v --color n \
     sys-devel/gcc
 
 # setup QEMU
