@@ -11,10 +11,11 @@ RUN sed -i \
     's/FEATURES=".*"/FEATURES="'"${DOCKER_FEATURES}"'"/' \
     "/usr/${DOCKER_TARGET}/etc/portage/make.conf"
 
-ENV DOCKER_CFLAGS="-Ofast -mfpu=vfp -mfloat-abi=hard -march=armv6zk -mtune=arm1176jzf-s -fomit-frame-pointer -pipe -fno-stack-protector -U_FORTIFY_SOURCE"
-RUN sed -i \
-    's/CFLAGS=".*"/CFLAGS="'"${DOCKER_CFLAGS}"'"/' \
-    "/usr/${DOCKER_TARGET}/etc/portage/make.conf"
+# ENV DOCKER_CFLAGS="-Ofast -mfpu=vfp -mfloat-abi=hard -march=armv6zk -mtune=arm1176jzf-s -fomit-frame-pointer -pipe -fno-stack-protector -U_FORTIFY_SOURCE"
+# RUN sed -i \
+#     's/CFLAGS=".*"/CFLAGS="'"${DOCKER_CFLAGS}"'"/' \
+#     "/usr/${DOCKER_TARGET}/etc/portage/make.conf"
+
 RUN cat "/usr/${DOCKER_TARGET}/etc/portage/make.conf"
 
 ENV DOCKER_PROFILE=hardened/linux/arm/armv6j
@@ -28,7 +29,9 @@ RUN time USE="headers-only" "${DOCKER_TARGET}-emerge" -v --color n \
     sys-kernel/linux-headers
 RUN time USE="headers-only" "${DOCKER_TARGET}-emerge" -v --color n --nodeps \
     sys-libs/glibc
-RUN time USE="nls nptl pch pie ssp -cilk -cxx -debug -doc -fortran -go -graphite -hardened -jit -libssp -mpx -multilib -objc -objc++ -objc-gc -openmp -pgo -regression-test -sanitize -vanilla -vtv" \
+RUN cp -f
+RUN rm -f /usr/bin/gcc; rm -f /usr/bin/g++; alias gcc=${DOCKER_TARGET}-gcc; alias g++=${DOCKER_TARGET}-g++; g++ -dumpmachine; \
+    time USE="nls nptl pch pie ssp -cilk -cxx -debug -doc -fortran -go -graphite -hardened -jit -libssp -mpx -multilib -objc -objc++ -objc-gc -openmp -pgo -regression-test -sanitize -vanilla -vtv" \
     "${DOCKER_TARGET}-emerge" -v --color n \
     sys-devel/gcc
 
