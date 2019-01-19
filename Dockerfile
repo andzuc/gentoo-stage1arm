@@ -1,4 +1,7 @@
+FROM andzuc/gentoo-armqemu as qemu
 FROM andzuc/gentoo-armbuilder-s4
+
+COPY --from=qemu /usr/bin/qemu-arm /usr/bin/qemu-arm
 
 # system config
 ENV DOCKER_ACCEPT_KEYWORDS="arm"
