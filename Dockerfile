@@ -1,8 +1,6 @@
 FROM andzuc/gentoo-armqemu as qemu
 FROM andzuc/gentoo-armbuilder-s4
 
-COPY --from=qemu /usr/bin/qemu-arm /usr/bin/qemu-arm
-
 # system config
 ENV DOCKER_ACCEPT_KEYWORDS="arm"
 RUN sed -i \
@@ -36,9 +34,11 @@ RUN time USE="nls nptl pch pie ssp -cilk -cxx -debug -doc -fortran -go -graphite
     "${DOCKER_TARGET}-emerge" -v --color n \
     sys-devel/gcc
 
-# test
+COPY --from=qemu /usr/bin/qemu-arm "/usr/${DOCKER_TARGET}/usr/bin/"
 RUN time "${DOCKER_TARGET}-emerge" -v --color n \
-    sys-apps/busybox
+    app-shells/bash \
+    && cp /usr/bin/qemu-arm /usr/armv6z-hardfloat-linux-gnueabi/usr/bin \
+    && chroot /usr/armv6z-hardfloat-linux-gnueabi /usr/bin/qemu-arm --execve /usr/bin/qemu-arm /bin/bash -c '/bin/echo Hello from ARM container'
 
 # setup QEMU
 #RUN cp /usr/bin/qemu-arm "/usr/${DOCKER_TARGET}/usr/bin/qemu-arm"
