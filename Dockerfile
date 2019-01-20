@@ -36,6 +36,10 @@ RUN time USE="nls nptl pch pie ssp -cilk -cxx -debug -doc -fortran -go -graphite
     "${DOCKER_TARGET}-emerge" -v --color n \
     sys-devel/gcc
 
+# test
+RUN time "${DOCKER_TARGET}-emerge" -v --color n \
+    sys-apps/busybox
+
 # setup QEMU
 #RUN cp /usr/bin/qemu-arm "/usr/${DOCKER_TARGET}/usr/bin/qemu-arm"
 #RUN time emerge -v dev-util/catalyst
