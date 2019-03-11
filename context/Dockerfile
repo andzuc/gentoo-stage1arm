@@ -1,12 +1,24 @@
 FROM andzuc/gentoo-armbuilder-seed0 as seed
-FROM andzuc/gentoo-armqemu as qemu
 FROM scratch
 
 COPY --from=seed /builder/seed /
-COPY --from=qemu /usr/bin/qemu-arm /usr/bin/
+COPY --from=seed /usr/portage /usr/portage
+COPY --from=seed /builder/ext/qemu /emu/
+COPY --from=seed /builder/ext/resin/resin-xbuild /emu/
+COPY /builder/emu /emu/
 
-RUN [ "/usr/bin/qemu-arm", "-help" ]
-RUN [ "/usr/bin/qemu-arm", "-execve", "/usr/bin/qemu-arm", "/bin/bash", "-c", "/bin/echo Hello from ARM container" ]
+RUN [ "/emu/qemu-arm", "-help" ]
+RUN [ "/emu/qemu-arm", "-execve", "/emu/qemu-arm", "/bin/bash", "-c", "echo Hello from ARM container: ${TC_PROFILE}" ]
 
-ENTRYPOINT [ "/usr/bin/qemu-arm", "-execve", "/usr/bin/qemu-arm" ]
+RUN [ "/emu/qemu-arm", "-execve", "/emu/qemu-arm", "/bin/bash", "-c", "/emu/xbuild.install" ]
+RUN [ "/usr/bin/cross-build-start" ]
+RUN gcc --version \
+    && gcc -dumpmachine
+
+#RUN wget https://dev.gentoo.org/~vapier/bootstrap-portage
+
+RUN [ "/usr/bin/cross-build-end" ]
+RUN [ "/emu/qemu-arm", "-execve", "/emu/qemu-arm", "/bin/bash", "-c", "/emu/xbuild.uninstall" ]
+
+ENTRYPOINT [ "/emu/qemu-arm", "-execve", "/emu/qemu-arm" ]
 CMD [ "/bin/bash" ]

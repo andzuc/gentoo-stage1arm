@@ -1,0 +1,5 @@
+#!/bin/sh
+cp /emu/resin-xbuild /usr/bin/
+cd /usr/bin/
+ln ./resin-xbuild /usr/bin/cross-build-start
+ln ./resin-xbuild /usr/bin/cross-build-end
