@@ -12,6 +12,7 @@ RUN [ "/emu/qemu-arm", "-execve", "/emu/qemu-arm", "/bin/bash", "-c", "echo Hell
 
 RUN [ "/emu/qemu-arm", "-execve", "/emu/qemu-arm", "/bin/bash", "-c", "/emu/xbuild.install" ]
 RUN [ "/usr/bin/cross-build-start" ]
+
 RUN gcc --version \
     && gcc -dumpmachine
 
