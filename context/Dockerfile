@@ -5,7 +5,7 @@ COPY --from=seed /builder/seed /
 COPY --from=seed /usr/portage /usr/portage
 COPY --from=seed /builder/ext/qemu /emu/
 COPY --from=seed /builder/ext/resin/resin-xbuild /emu/
-COPY builder/emu /emu/
+COPY emu /emu/
 
 RUN [ "/emu/qemu-arm", "-help" ]
 RUN [ "/emu/qemu-arm", "-execve", "/emu/qemu-arm", "/bin/bash", "-c", "echo Hello from ARM container: ${TC_PROFILE}" ]
