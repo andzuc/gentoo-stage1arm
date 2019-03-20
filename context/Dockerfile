@@ -13,8 +13,17 @@ RUN [ "/emu/qemu-arm", "-execve", "/emu/qemu-arm", "/bin/bash", "-c", "echo Hell
 RUN [ "/emu/qemu-arm", "-execve", "/emu/qemu-arm", "/bin/bash", "-c", "/emu/xbuild.install" ]
 RUN [ "/usr/bin/cross-build-start" ]
 
+# Installs portage from Gentoo GIT repository
 RUN gcc --version \
-    && gcc -dumpmachine
+    && gcc -dumpmachine \
+    && python --version \
+    && mkdir /opt \
+    && cd /opt \
+    && git clone --depth 1 --branch master https://anongit.gentoo.org/git/proj/portage.git \
+    && cd portage \
+    && python setup.py install \
+    && cd / \
+    && emerge --info
 
 #RUN wget https://dev.gentoo.org/~vapier/bootstrap-portage
 
