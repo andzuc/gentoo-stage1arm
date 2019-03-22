@@ -1,6 +1,9 @@
 FROM andzuc/gentoo-armbuilder-seed0 as seed
 FROM scratch
 
+ENV STAGE1_FEATURES="-sandbox -usersandbox buildpkg noman noinfo nodoc"
+ENV STAGE1_CFLAGS="-Ofast -mfpu=vfp -mfloat-abi=hard -march=armv6zk -mtune=arm1176jzf-s -fomit-frame-pointer -pipe -fno-stack-protector -U_FORTIFY_SOURCE"
+
 COPY --from=seed /builder/seed /
 COPY --from=seed /usr/portage /usr/portage
 COPY --from=seed /builder/ext/qemu /emu/
@@ -17,6 +20,10 @@ RUN [ "/usr/bin/cross-build-start" ]
 RUN gcc --version \
     && gcc -dumpmachine \
     && python --version \
+    && echo "FEATURES='${STAGE1_FEATURES}'" >>/etc/portage/make.conf \
+    && sed -i \
+	   's/CFLAGS=".*"/CFLAGS="'"${STAGE1_CFLAGS}"'"/' \
+	   /etc/portage/make.conf \
     && mkdir /opt \
     && cd /opt \
     && git clone --depth 1 --branch master https://anongit.gentoo.org/git/proj/portage.git \
@@ -24,6 +31,8 @@ RUN gcc --version \
     && python setup.py install \
     && cd / \
     && emerge --info
+
+RUN emerge -v less
 
 #RUN wget https://dev.gentoo.org/~vapier/bootstrap-portage
 
