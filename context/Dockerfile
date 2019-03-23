@@ -28,12 +28,14 @@ RUN gcc --version \
     && cd /opt \
     && git clone --depth 1 --branch master https://anongit.gentoo.org/git/proj/portage.git \
     && cd portage \
+    && echo "[build_ext]" >>setup.cfg \
+    && echo "portage-ext-modules=true" \
     && python setup.py install \
     && cd / \
-    && emerge --info \
-    && mkdir /stage1
+    && emerge --info
 
-RUN emerge --root /stage1 -ev @system
+RUN mkdir /stage1 \
+    && emerge --root /stage1 -ev @system
 
 #RUN wget https://dev.gentoo.org/~vapier/bootstrap-portage
 
