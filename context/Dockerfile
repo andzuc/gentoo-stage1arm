@@ -30,9 +30,10 @@ RUN gcc --version \
     && cd portage \
     && python setup.py install \
     && cd / \
-    && emerge --info
+    && emerge --info \
+    && mkdir /stage1
 
-RUN emerge -v less
+RUN emerge --root /stage1 -ev @system
 
 #RUN wget https://dev.gentoo.org/~vapier/bootstrap-portage
 
