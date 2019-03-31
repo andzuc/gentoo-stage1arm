@@ -1,5 +1,5 @@
 FROM andzuc/gentoo-armbuilder-seed0 as seed
-FROM scratch
+FROM scratch as seedsys
 
 ENV STAGE1_FEATURES="-sandbox -usersandbox buildpkg noman noinfo nodoc"
 ENV STAGE1_CFLAGS="-Ofast -mfpu=vfp -mfloat-abi=hard -march=armv6zk -mtune=arm1176jzf-s -fomit-frame-pointer -pipe -fno-stack-protector -U_FORTIFY_SOURCE"
@@ -16,6 +16,7 @@ RUN [ "/emu/qemu-arm", "-execve", "/emu/qemu-arm", "/bin/bash", "-c", "echo Hell
 RUN [ "/emu/qemu-arm", "-execve", "/emu/qemu-arm", "/bin/bash", "-c", "/emu/xbuild.install" ]
 RUN [ "/usr/bin/cross-build-start" ]
 
+FROM seedsys as portage
 # Installs portage from Gentoo GIT repository
 RUN gcc --version \
     && gcc -dumpmachine \
@@ -29,13 +30,17 @@ RUN gcc --version \
     && git clone --depth 1 --branch master https://anongit.gentoo.org/git/proj/portage.git \
     && cd portage \
     && echo "[build_ext]" >>setup.cfg \
-    && echo "portage-ext-modules=true" \
+    && echo "portage-ext-modules=true" >>setup.cfg \
     && python setup.py install \
     && cd / \
-    && emerge --info
+    && emerge --info \
+    && ebuild /usr/portage/sys-apps/portage/portage-2.3.51-r1.ebuild package
 
-RUN mkdir /stage1 \
-    && emerge --root /stage1 -ev @system
+FROM seedsys as stage1
+#COPY --from=portage /opt/portage /portage
+
+# RUN mkdir /stage1 \
+#     && emerge --root /stage1 -ev @system
 
 #RUN wget https://dev.gentoo.org/~vapier/bootstrap-portage
 
