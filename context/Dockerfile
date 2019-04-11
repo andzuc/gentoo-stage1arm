@@ -16,16 +16,18 @@ RUN [ "/emu/qemu-arm", "-execve", "/emu/qemu-arm", "/bin/bash", "-c", "echo Hell
 RUN [ "/emu/qemu-arm", "-execve", "/emu/qemu-arm", "/bin/bash", "-c", "/emu/xbuild.install" ]
 RUN [ "/usr/bin/cross-build-start" ]
 
-FROM seedsys as portage
-# Installs portage from Gentoo GIT repository
 RUN gcc --version \
     && gcc -dumpmachine \
     && python --version \
     && echo "FEATURES='${STAGE1_FEATURES}'" >>/etc/portage/make.conf \
     && sed -i \
 	   's/CFLAGS=".*"/CFLAGS="'"${STAGE1_CFLAGS}"'"/' \
-	   /etc/portage/make.conf \
-    && mkdir /opt \
+	   /etc/portage/make.conf
+
+FROM seedsys as portage
+# Installs portage from Gentoo GIT repository
+# Then use ebuild to build a stable sys-apps/portage
+RUN mkdir /opt \
     && cd /opt \
     && git clone --depth 1 --branch master https://anongit.gentoo.org/git/proj/portage.git \
     && cd portage \
@@ -34,15 +36,15 @@ RUN gcc --version \
     && python setup.py install \
     && cd / \
     && emerge --info \
-    && ebuild /usr/portage/sys-apps/portage/portage-2.3.51-r1.ebuild package
+    && PYTHON_TARGETS="python3_6" ebuild /usr/portage/sys-apps/portage/portage-2.3.51-r1.ebuild package
 
 FROM seedsys as stage1
-#COPY --from=portage /opt/portage /portage
+# Use sys-apps/portage pakage from portage stage
+COPY --from=portage /usr/portage/packages /usr/portage/packages
+RUN tar -xvjf /usr/portage/packages/sys-apps/portage-2.3.51-r1.tbz2 -C /
 
-# RUN mkdir /stage1 \
-#     && emerge --root /stage1 -ev @system
-
-#RUN wget https://dev.gentoo.org/~vapier/bootstrap-portage
+RUN mkdir /stage1 \
+    && emerge --root /stage1 -pev @system
 
 RUN [ "/usr/bin/cross-build-end" ]
 RUN [ "/emu/qemu-arm", "-execve", "/emu/qemu-arm", "/bin/bash", "-c", "/emu/xbuild.uninstall" ]
