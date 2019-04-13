@@ -44,7 +44,7 @@ COPY --from=portage /usr/portage/packages /usr/portage/packages
 RUN tar -xvjf /usr/portage/packages/sys-apps/portage-2.3.51-r1.tbz2 -C /
 
 RUN mkdir /st1 \
-    && emerge --root /st1 --sysroot /st1 --root-deps=rdeps -pv @system
+    && emerge --root /st1 --sysroot /st1 --root-deps=rdeps -v @system
 
 RUN [ "/usr/bin/cross-build-end" ]
 RUN [ "/emu/qemu-arm", "-execve", "/emu/qemu-arm", "/bin/bash", "-c", "/emu/xbuild.uninstall" ]
